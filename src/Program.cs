@@ -1,7 +1,11 @@
+using Consul.Demo.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var consulHost = "http://localhost:8500";
+builder.Services.AddConsulConfig(configKey: consulHost);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

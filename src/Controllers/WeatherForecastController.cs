@@ -1,3 +1,5 @@
+using Consul.Demo.Helpers;
+using Consul.Demo.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Consul.Demo.Controllers;
@@ -6,27 +8,16 @@ namespace Consul.Demo.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
-    {
-        _logger = logger;
-    }
-
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public async Task<ActionResult> Get()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        var consulDemoKey = await ConsulKeyValueProvider.GetValueAsync<ConsulDemoKey>(key: "ConsulDemoKey");
+
+        if(consulDemoKey != null && consulDemoKey.IsEnabled)
         {
-            Date = DateTime.Now.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+            return Ok(consulDemoKey);
+        }
+
+        return Ok("ConsulDemoKey is null");
     }
 }
